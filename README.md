@@ -1,3 +1,20 @@
+# Cricket Performance Lab — Match Analyst Edition
+
+[Buka situs GitHub Pages](https://tukangolahraga.github.io/cricket-performance-lab/) · [Match Analyst Cloud](https://script.google.com/macros/s/AKfycbx21EiJrl_mCKjAAH0F31ahnhN5pLiKVj_uPbwrLwANL72fWl8S4ZCArLKgHvIfurXT_A/exec)
+
+Pembaruan 5 November 2026: portal PCI DKI Jakarta, scoring T10/T20/6s’/Super8, profil lawan dan rencana taktik. Backend Match Analyst telah diterbitkan terpisah dan simpan/baca ulang data sintetis berhasil diuji. Akses Google masih Only myself (akun pemilik).
+
+- `index.html`: pintu masuk GitHub Pages menuju aplikasi Google yang berautentikasi.
+- `match-analyst.html`: aplikasi lengkap dalam mode perangkat; data hanya di browser. Gunakan tombol cloud pada portal untuk autosave Google.
+- `v6.4-popup-preserved.html`: salinan aplikasi GitHub sebelumnya, dipertahankan terpisah tanpa perubahan isi.
+- Data pertandingan, data atlet, kredensial dan snapshot Google tidak dimasukkan pada pembaruan hosting ini.
+
+GitHub Pages menyajikan halaman statis. google.script.run tersedia pada halaman Apps Script HTML Service; tidak ada klaim sinkronisasi langsung dari origin GitHub Pages. Pemindahan data lokal dilakukan melalui ekspor/impor JSON.
+
+---
+
+## Dokumentasi V6.4 sebelumnya
+
 # Cricket Performance Lab — V6.4 Popup Edition
 
 Repository siap diunggah ke GitHub, dengan frontend V6.4 asli, backend Apps Script, indeks pertandingan ternormalisasi di Sheets, dan backup Drive.
