@@ -1,69 +1,30 @@
-# Cricket Performance Lab — Match Analyst Edition
+# Cricket Performance Lab — Match Analyst Publik
 
-[Buka situs GitHub Pages](https://tukangolahraga.github.io/cricket-performance-lab/) · [Match Analyst Cloud](https://script.google.com/macros/s/AKfycbx21EiJrl_mCKjAAH0F31ahnhN5pLiKVj_uPbwrLwANL72fWl8S4ZCArLKgHvIfurXT_A/exec)
+[Buka aplikasi langsung](https://tukangolahraga.github.io/cricket-performance-lab/) · [Panduan pengguna](https://tukangolahraga.github.io/cricket-performance-lab/panduan-publik.html)
 
-Pembaruan 5 November 2026: portal PCI DKI Jakarta, scoring T10/T20/6s’/Super8, profil lawan dan rencana taktik. Backend Match Analyst telah diterbitkan terpisah dan simpan/baca ulang data sintetis berhasil diuji. Akses Google masih Only myself (akun pemilik).
+Aplikasi scoring dan analisis cricket untuk semua tim. Berjalan langsung di GitHub Pages, tanpa login dan tanpa membuka halaman Apps Script.
 
-- `index.html`: pintu masuk GitHub Pages menuju aplikasi Google yang berautentikasi.
-- `match-analyst.html`: aplikasi lengkap dalam mode perangkat; data hanya di browser. Gunakan tombol cloud pada portal untuk autosave Google.
-- `v6.4-popup-preserved.html`: salinan aplikasi GitHub sebelumnya, dipertahankan terpisah tanpa perubahan isi.
-- Data pertandingan, data atlet, kredensial dan snapshot Google tidak dimasukkan pada pembaruan hosting ini.
+## Fitur
 
-GitHub Pages menyajikan halaman statis. google.script.run tersedia pada halaman Apps Script HTML Service; tidak ada klaim sinkronisasi langsung dari origin GitHub Pages. Pemindahan data lokal dilakukan melalui ekspor/impor JSON.
+- T10, T20, 6s’ dan Super8; batas over/bowler dapat disesuaikan.
+- Scoring runs, extras, wicket, target, dua innings, undo/redo dan autosave browser.
+- Profil lawan dan matchup berdasarkan match aktif serta arsip yang dideduplikasi; bukti dan jumlah sampel tetap terlihat.
+- Rencana per lawan: Plan A/Plan B, field placement, taktik batting, jadwal bowler/alternatif per over, serta evaluasi.
+- Tema siang/malam, logo PCI DKI Jakarta, dan tab/popup ringkas.
+- Impor/ekspor JSON serta CSV pertandingan.
 
----
+## Penyimpanan versi publik
 
-## Dokumentasi V6.4 sebelumnya
+Setiap pengguna menyimpan datanya di browser/perangkat masing-masing. Tidak ada database bersama, unggahan otomatis, atau sinkronisasi lintas perangkat pada versi publik ini. Ekspor JSON untuk cadangan lengkap termasuk rencana; impor JSON untuk pindah perangkat. CSV pertandingan tidak mencakup rencana.
 
-# Cricket Performance Lab — V6.4 Popup Edition
+Menghapus data browser atau memakai mode incognito dapat memengaruhi autosave. Data pribadi/cloud yang pernah dipakai pemilik tidak dibuka ke publik.
 
-Repository siap diunggah ke GitHub, dengan frontend V6.4 asli, backend Apps Script, indeks pertandingan ternormalisasi di Sheets, dan backup Drive.
+## File
 
-**23 test lokal lulus. Status hosting, deployment, dan uji layanan nyata dicatat di [DEPLOYMENT.md](docs/DEPLOYMENT.md).**
+- `index.html`: aplikasi publik langsung pada alamat utama.
+- `match-analyst.html`: aplikasi publik yang sama pada alamat alternatif.
+- `panduan-publik.html`: cara scoring, arsip, taktik dan cadangan.
+- `v6.4-popup-preserved.html`: V6.4 sebelumnya, disimpan terpisah.
+- Berkas backend/dokumentasi lama tetap sebagai riwayat proyek; versi publik tidak memanggil backend tersebut.
 
-Mulai dari [panduan instalasi](docs/SETUP.md). Uji penyimpanan nyata menggunakan [checklist](docs/TESTING.md) setelah Anda menyiapkan deployment sendiri.
-
-## Cara kerja
-
-- `index.html`: frontend lengkap untuk GitHub Pages atau penggunaan lokal. Scoring dan fitur V6.4 tetap tersedia. Penyimpanan otomatis di browser bersifat lokal.
-- `backend/App.html`: frontend yang sama, dilayani Apps Script agar `google.script.run` dapat mengakses backend setelah login.
-- GitHub Pages menyediakan tombol menuju workspace Apps Script. **Tidak ada sinkronisasi cloud langsung dari origin GitHub Pages.** Pemindahan data antarkedua alamat memakai ekspor/impor bundle eksplisit.
-- Mode cloud default adalah **pribadi, hanya pemilik akun Google**, sehingga Gmail pribadi didukung. Web app diatur Only myself dan backend memverifikasi identitas lagi.
-- Dua penyimpanan cloud: snapshot lengkap 13 dataset untuk asesmen/arsip; penyimpanan pertandingan untuk database lawan. Keduanya memiliki tombol dan revisi tersendiri.
-
-## Isi repository
-
-```text
-index.html                  frontend hasil build, langsung dapat dibuka
-config.js                   URL publik workspace cloud, tanpa rahasia
-backend/Code.gs             auth, validasi, Sheets, Drive, revisi
-backend/App.html            frontend identik untuk Apps Script
-backend/appsscript.json     scope dan konfigurasi Workspace
-reference/v6.4-popup-original.html  salinan sumber asli, tidak diedit
-scripts/build.mjs           build deterministik dari sumber asli
-scripts/client-bridge.js    pengganti dua adapter cloud lama
-scripts/restore-backup.mjs  konversi backup yang diunduh menjadi impor lokal
-tests/                     pengujian lokal tanpa akun Google
-docs/SETUP.md              langkah GitHub dan Apps Script
-docs/SECURITY.md           batas keamanan dan cross-origin
-docs/DATABASE.md           struktur tabel, relasi, revisi, pemulihan
-docs/FEATURES.md           inventaris fitur dan perubahan
-docs/TESTING.md            checklist lokal dan live (belum dijalankan)
-docs/VALIDATION.md         hasil verifikasi lokal
-docs/source-manifest.json  checksum sumber
-.github/workflows/check.yml  pemeriksaan otomatis setelah push
-```
-
-## Build dan pengujian
-
-Pasang Node.js versi 20 atau lebih baru. Tidak ada paket npm tambahan yang diperlukan.
-
-```sh
-npm run check
-```
-
-Setelah mengubah `config.js` atau `scripts/client-bridge.js`, jalankan `npm run build`. Upload ulang `backend/App.html` dan buat versi deployment Apps Script baru jika frontend cloud juga berubah. File HTML hasil build sudah disertakan, sehingga Node tidak diperlukan untuk sekadar membukanya.
-
-Gunakan data sintetis saat mencoba. Jangan upload bundle ekspor, data atlet, backup Drive, credential, atau konfigurasi akun ke repository publik. Source lama disimpan sebagai referensi, bukan backend yang perlu dipasang.
-
-Fitur pose otomatis tetap menggunakan MediaPipe CDN sesuai sumber asli. Video asli dan file model tidak dibundel atau dicadangkan. Fitur tersebut membutuhkan internet dan tetap perlu pengujian browser tersendiri.
+Pembaruan hosting 5 November 2026. GitHub Pages memakai branch `main`, folder root, dan HTTPS.
