@@ -1,30 +1,13 @@
-# Cricket Performance Lab — Match Analyst Publik
+# Cricket Performance Lab — Match Analyst Edition
 
-[Buka aplikasi langsung](https://tukangolahraga.github.io/cricket-performance-lab/) · [Panduan pengguna](https://tukangolahraga.github.io/cricket-performance-lab/panduan-publik.html)
+Aplikasi: https://tukangolahraga.github.io/CricketScoring/
 
-Aplikasi scoring dan analisis cricket untuk semua tim. Berjalan langsung di GitHub Pages, tanpa login dan tanpa membuka halaman Apps Script.
+Scoring lokal tanpa akun; direktori dan statistik publik; pencatat login email/password; draft dan taktik privat. T10, T20, 6s dan Super8 tersedia. V6.4 tetap terpisah di v6.4-popup-preserved.html.
 
-## Fitur
+Backend Supabase khusus Cricket Performance Lab sudah dipasang. Pendaftaran umum masih ditahan sampai SMTP dan alur konfirmasi email berhasil diuji. Jangan menganggap login/penyimpanan akun sudah diuji end-to-end sebelum aktivasi tersebut selesai.
 
-- T10, T20, 6s’ dan Super8; batas over/bowler dapat disesuaikan.
-- Scoring runs, extras, wicket, target, dua innings, undo/redo dan autosave browser.
-- Profil lawan dan matchup berdasarkan match aktif serta arsip yang dideduplikasi; bukti dan jumlah sampel tetap terlihat.
-- Rencana per lawan: Plan A/Plan B, field placement, taktik batting, jadwal bowler/alternatif per over, serta evaluasi.
-- Tema siang/malam, logo PCI DKI Jakarta, dan tab/popup ringkas.
-- Impor/ekspor JSON serta CSV pertandingan.
+Pencatat hanya dapat mengirim hasil untuk tim yang dikelolanya atau tim yang mengundangnya. Identitas pemain memakai UUID, tidak digabung berdasarkan nama saja. Server menghitung ulang statistik; revisi dan pengiriman ulang tidak menggandakan hasil. Draft dan rencana hanya dapat dibaca pemilik akun. Publikasi hasil selesai bersifat eksplisit atau memakai opsi otomatis yang dipilih pencatat.
 
-## Penyimpanan versi publik
+Panduan pengguna: panduan-publik.html. Apps Script tidak dipakai sebagai halaman aplikasi publik. Kunci publik frontend bukan kunci server; jangan menaruh kredensial SMTP atau service-role di repository.
 
-Setiap pengguna menyimpan datanya di browser/perangkat masing-masing. Tidak ada database bersama, unggahan otomatis, atau sinkronisasi lintas perangkat pada versi publik ini. Ekspor JSON untuk cadangan lengkap termasuk rencana; impor JSON untuk pindah perangkat. CSV pertandingan tidak mencakup rencana.
-
-Menghapus data browser atau memakai mode incognito dapat memengaruhi autosave. Data pribadi/cloud yang pernah dipakai pemilik tidak dibuka ke publik.
-
-## File
-
-- `index.html`: aplikasi publik langsung pada alamat utama.
-- `match-analyst.html`: aplikasi publik yang sama pada alamat alternatif.
-- `panduan-publik.html`: cara scoring, arsip, taktik dan cadangan.
-- `v6.4-popup-preserved.html`: V6.4 sebelumnya, disimpan terpisah.
-- Berkas backend/dokumentasi lama tetap sebagai riwayat proyek; versi publik tidak memanggil backend tersebut.
-
-Pembaruan hosting 5 November 2026. GitHub Pages memakai branch `main`, folder root, dan HTTPS.
+Validasi: 33 pengujian scoring/data, 5 pengujian rencana, 13 pengujian backend/client bersama; pengujian transaksi PostgreSQL untuk akses A/B/anon, hak tim, privasi, retry dan revisi telah dijalankan lalu dibatalkan agar tidak meninggalkan data contoh. Pengujian akun nyata menunggu SMTP.
