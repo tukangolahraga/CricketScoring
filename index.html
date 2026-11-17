@@ -262,4 +262,50 @@ $('myDrafts').onclick=async e=>{const ix=e.target.dataset.loadDraft;if(ix===unde
 $('recoverAccountBtn').onclick=async()=>{try{if(!DB_CONFIG.registrationReady)throw Error('Pengirim email pemulihan belum diaktifkan oleh pengelola.');const email=$('accountEmail').value.trim();if(!email)throw Error('Isi alamat email akun dahulu.');await authRequest('recover?redirect_to='+encodeURIComponent(DB_CONFIG.redirect),{email});$('accountMessage').textContent='Jika akun sesuai, tautan pemulihan dikirim ke email tersebut.';}catch(e){$('accountMessage').textContent=e.message}};
 $('newPasswordForm').onsubmit=async e=>{e.preventDefault();try{const password=$('newPassword').value;if(password.length<8||password!==$('newPasswordAgain').value)throw Error('Kata sandi minimal 8 karakter dan kedua isian harus sama.');const token=await validSession();await jsonRequest(DB_CONFIG.url+'/auth/v1/user',{method:'PUT',headers:{apikey:DB_CONFIG.key,Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({password})});$('newPassword').value='';$('newPasswordAgain').value='';$('newPasswordDialog').close();toast('Kata sandi diperbarui.')}catch(err){$('passwordMessage').textContent=err.message}};
 (async()=>{try{const params=new URLSearchParams(location.hash.slice(1)),token=params.get('access_token');if(token){const session={access_token:token,refresh_token:params.get('refresh_token'),expires_in:Number(params.get('expires_in')||3600)};const recovery=params.get('type')==='recovery';history.replaceState(null,'',location.pathname+location.search);await enterAccount(session);if(recovery)$('newPasswordDialog').showModal();return}if(params.has('error_description')){$('accountMessage').textContent=params.get('error_description');history.replaceState(null,'',location.pathname+location.search);$('accountDialog').showModal();return}const cached=JSON.parse(localStorage.getItem(AUTH_STORE)||'null');if(cached){shared.session=cached;await validSession();await enterAccount(shared.session)}}catch(e){shared.session=null;localStorage.removeItem(AUTH_STORE);$('accountMessage').textContent='Sesi perlu masuk ulang: '+e.message}})();
-</script></body></html>
+</script>
+<script>
+/* Guided scoring: no change to scoring rules, permissions or publication consent. */
+(function(){
+const css=document.createElement('style');css.textContent='.easy-guide{margin:0 24px 12px;padding:12px 16px;border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;background:var(--panel);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0}.easy-guide p{margin-top:3px;font-size:12px;color:var(--muted)}.easy-steps{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.easy-steps span{padding:5px 10px;border-radius:20px;background:var(--control);color:var(--muted)}.easy-steps span[aria-current="step"]{background:var(--green);color:var(--panel);font-weight:700}#setupForm [hidden]{display:none!important}@media(max-width:800px){.easy-guide{margin:0 12px 10px}.easy-guide button{width:100%}}';document.head.appendChild(css);
+const banner=document.createElement('aside');banner.className='easy-guide';banner.setAttribute('aria-label','Panduan penyimpanan');banner.innerHTML='<div><strong id="easyTitle"></strong><p id="easyText"></p></div><button id="easyNext" class="primary"></button>';document.querySelector('main').before(banner);
+let latestStatus='',step=0;
+const form=$('setupForm'),body=form.querySelector('.body'),sections=Array.from(body.children);
+const groups=[sections.slice(0,2),sections.slice(2,3),sections.slice(3)];
+const steps=document.createElement('div');steps.className='easy-steps';steps.innerHTML=['1. Format','2. Tim & pemain','3. Mulai'].map(x=>'<span>'+x+'</span>').join('');body.before(steps);
+const submit=form.querySelector('[type="submit"]');submit.textContent='Mulai catat skor';
+const controls=document.createElement('div');controls.className='row';controls.style.marginTop='12px';controls.innerHTML='<button type="button" id="easyBack">← Kembali</button><button type="button" id="easyContinue" class="primary">Lanjut →</button>';form.appendChild(controls);
+function showStep(n){step=n;groups.forEach((g,i)=>g.forEach(el=>el.hidden=i!==step));Array.from(steps.children).forEach((el,i)=>{if(i===step)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current')});$('easyBack').hidden=step===0;$('easyContinue').hidden=step===2;submit.hidden=step!==2;}
+function validateStep(){for(const el of groups[step].flatMap(g=>Array.from(g.querySelectorAll('input,select,textarea')))){if(!el.reportValidity())return false}if(step===1){const count=CPL.formats[$('format').value].players;for(const suffix of ['A','B']){const names=$('players'+suffix).value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);if(names.length!==count){toast('Tim '+suffix+' perlu '+count+' pemain. Isi satu nama di setiap baris.');$('players'+suffix).focus();return false}if(new Set(names.map(CPL.norm)).size!==names.length){toast('Ada nama pemain berulang di Tim '+suffix+'. Periksa kembali.');return false}}if(CPL.norm($('teamA').value)===CPL.norm($('teamB').value)){toast('Nama kedua tim harus berbeda.');return false}}return true}
+$('easyContinue').onclick=()=>{if(validateStep())showStep(step+1)};$('easyBack').onclick=()=>showStep(step-1);
+form.addEventListener('submit',e=>{if(step<2){e.preventDefault();e.stopImmediatePropagation();if(validateStep())showStep(step+1)}},true);
+for(const id of ['setupBtn','startBtn'])$(id).addEventListener('click',()=>showStep(0));
+$('setupDialog').querySelector('h2').textContent='Buat pertandingan • 3 langkah';
+$('setupBtn').textContent='＋ Pertandingan baru';$('startBtn').textContent='Mulai catat skor';
+$('teamA').placeholder='Contoh: Bintaro Cricket';$('teamB').placeholder='Contoh: Jakarta Cricket';
+for(const suffix of ['A','B'])$('players'+suffix).placeholder='Satu nama per baris, contoh:\nAndi\nBudi\nCandra\n…';
+$('bindDialog').querySelector('h2').textContent='Siapkan penyimpanan online';
+$('bindRosterBtn').textContent='Pilih tim & cocokkan pemain';$('applyRegistryBtn').textContent='Selesai • aktifkan simpan otomatis';
+$('registerUnknownBtn').textContent='Daftarkan pemain baru yang belum ditemukan';
+$('saveDraftBtn').textContent='Simpan online sekarang';$('publishMatchBtn').textContent='Terbitkan hasil & statistik';
+$('syncDialog').querySelector('h2').textContent='Penyimpanan & hasil pertandingan';
+function updateGuide(){
+const m=state.match,button=$('easyNext');let title,description,label,action;
+if(!m){title='Mulai dari format, tim, lalu pemain';description='Bisa langsung mencatat tanpa akun. Untuk menyimpan online, masuk dan ikuti panduan setelah membuat pertandingan.';label='Buat pertandingan';action=()=>{$('setupBtn').click()};}
+else if(!shared.user){title='Pertandingan ini tersimpan di perangkat';description='Belum tersimpan online. Masuk untuk menyiapkan penyimpanan akun. Jika belum punya akun, scoring lokal tetap bisa digunakan.';label='Masuk untuk simpan online';action=()=>{$('accountDialog').showModal()};}
+else if(!shared.memberships.length){title='Langkah berikutnya: daftarkan atau gabung tim';description='Buka bagian Tim dan hak pencatatan. Daftarkan tim Anda, atau masukkan kode undangan dari pengelola tim.';label='Siapkan tim saya';action=()=>{$('accountDialog').showModal();$('newTeamName').value=$('newTeamName').value||m.teams[0].name;$('registerTeamBtn').scrollIntoView({block:'center'})};}
+else if(!matchMeta()){title='Langkah berikutnya: cocokkan tim dan pemain';description='Pilih dua tim, lalu pilih pemain yang benar dari daftar. Nama baru bisa didaftarkan bersama. Setelah selesai, skor disimpan online otomatis.';label='Siapkan simpan otomatis';action=()=>bindRoster();}
+else if(shared.pending||/perlu tindakan|perlu dicoba ulang/.test(latestStatus)){title='Penyimpanan online perlu diperiksa';description='Ada perubahan yang belum dikonfirmasi server. Cadangan perangkat tetap tersedia. Buka penyimpanan untuk mencoba ulang atau menangani konflik.';label='Periksa penyimpanan';action=()=>openSync();}
+else if(m.innings.length===2&&m.innings[1].ended){title='Pertandingan selesai • periksa hasil';description=latestStatus+' · Jika belum diterbitkan, buka penyimpanan dan pilih Terbitkan hasil & statistik. Publikasi memerlukan persetujuan Anda.';label='Periksa & terbitkan hasil';action=()=>openSync();}
+else {title=latestStatus.includes('Database tersimpan')?'Skor tersimpan online':'Simpan otomatis sudah disiapkan';description=(latestStatus||'Menunggu konfirmasi penyimpanan online')+' · Tidak perlu menunggu innings berakhir. Perubahan skor dikirim otomatis.';label='Lihat penyimpanan';action=()=>openSync();}
+$('easyTitle').textContent=title;$('easyText').textContent=description;button.textContent=label;button.onclick=action;
+}
+const originalStatus=dbStatus;dbStatus=function(s){originalStatus(s);latestStatus=s;updateGuide()};
+const originalRender=render;render=function(){originalRender();updateGuide()};
+const originalTeams=loadMyTeams;loadMyTeams=async function(){await originalTeams();updateGuide()};
+const originalApply=$('applyRegistryBtn').onclick;$('applyRegistryBtn').onclick=function(){originalApply();updateGuide()};
+const originalBind=bindRoster;bindRoster=async function(){await originalBind();if(!$('bindDialog').open)return;for(const [slot,t]of state.match.teams.entries()){const el=$(slot?'bindTeamB':'bindTeamA');if(!el.value){const matches=shared.teams.filter(x=>CPL.norm(x.display_name)===CPL.norm(t.name));if(matches.length===1)el.value=matches[0].id;}}};
+$('bindRosterBtn').onclick=()=>bindRoster();
+showStep(0);updateGuide();
+})();
+</script>
+</body></html>
